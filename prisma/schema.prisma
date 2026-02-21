@@ -1,0 +1,98 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id             Int     @id @default(autoincrement())
+  fullname       String  @db.VarChar(255)
+  email          String  @unique @db.VarChar(255)
+  username       String  @db.VarChar(255)
+  password       String  @db.VarChar(255)
+  bio            String? @db.Text
+  image          String? @db.VarChar(255)
+  imageId        String? @db.VarChar(255)    @map("image_id")
+  followingCount Int @db.Integer @default(0) @map("following_count")
+  followerCount  Int @db.Integer @default(0) @map("follower_count")
+  postCount      Int @db.Integer @default(0) @map("post_count")
+  createdAt DateTime @default(now())         @map("created_at")
+
+  post       Post[]
+  comments   Comment[]
+  bookmarks  Bookmark[]
+  likes      Likes[]
+  followings Follow[] @relation("Followings")
+  followers  Follow[] @relation("Followers")
+}
+
+model Post {
+  id             Int     @id @default(autoincrement())
+  userId         Int                             @map("user_id")
+  image          String  @db.VarChar(255)
+  imageId        String  @db.VarChar(255)        @map("image_id")
+  caption        String  @db.Text
+  commentCount   Int     @db.Integer @default(0) @map("comment_count")
+  likeCount      Int     @db.Integer @default(0) @map("like_count")
+  createdAt      DateTime @default(now())        @map("created_at")
+
+  user   User  @relation(fields: [userId], references: [id]) 
+
+  comments  Comment[]
+  likes     Likes[]
+  bookmarks Bookmark[]
+}
+
+model Comment {
+  id         Int      @id @default(autoincrement())
+  userId     Int                         @map("user_id")
+  postId     Int                         @map("post_id")
+  content    String   @db.Text
+  createdAt  DateTime @default(now())    @map("created_at")
+
+  user   User  @relation(fields: [userId], references: [id])
+  post   Post  @relation(fields: [postId], references: [id])
+}
+
+model Bookmark {
+  userId     Int                          @map("user_id")
+  postId     Int                          @map("post_id")
+  content    String   @db.Text
+  createdAt  DateTime @default(now())     @map("created_at")
+
+  user   User  @relation(fields: [userId], references: [id])
+  post   Post  @relation(fields: [postId], references: [id])
+
+  @@id([userId, postId])
+}
+
+model Likes {
+  userId     Int                          @map("user_id")
+  postId     Int                          @map("post_id")
+  content    String   @db.Text
+  createdAt  DateTime @default(now())     @map("created_at")
+
+  user   User  @relation(fields: [userId], references: [id])
+  post   Post  @relation(fields: [postId], references: [id])
+
+  @@id([userId, postId])
+}
+
+model Follow {
+  followerId  Int                        @map("follower_id")
+  followingId Int                        @map("following_id")         
+  createdAt   DateTime @default(now())   @map("created_at")
+
+  follower    User     @relation("Followers", fields: [followerId], references: [id])
+  following   User     @relation("Followings", fields: [followingId], references: [id])
+  @@id([followerId, followingId])
+}
