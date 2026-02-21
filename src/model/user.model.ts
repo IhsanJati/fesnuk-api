@@ -1,5 +1,5 @@
 export interface UserResponse {
-  status: string;
+  status?: string;
   message: string;
   data?: object;
 }

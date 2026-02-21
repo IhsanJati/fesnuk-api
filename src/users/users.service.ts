@@ -55,4 +55,20 @@ export class UsersService {
   async getUserByEmail(email: string) {
     return await this.prismaService.user.findUnique({ where: { email } });
   }
+
+  async getUserByUsername(username: string): Promise<UserResponse> {
+    const user = await this.prismaService.user.findUnique({
+      where: { username },
+      omit: { password: true, imageId: true },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return {
+      message: 'User details',
+      data: user,
+    };
+  }
 }

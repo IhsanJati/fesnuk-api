@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UsePipes } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UsePipes } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { ZodValidationPipe } from 'src/common/zod.pipe';
 import { registerUserSchema } from './dto/create-user.schema';
@@ -13,5 +13,12 @@ export class UsersController {
   @UsePipes(new ZodValidationPipe(registerUserSchema))
   async registerUser(@Body() data: CreateUserRequest): Promise<UserResponse> {
     return await this.userService.registerUser(data);
+  }
+
+  @Get('/:username')
+  async getUserByUsername(
+    @Param('username') username: string,
+  ): Promise<UserResponse> {
+    return await this.userService.getUserByUsername(username);
   }
 }
