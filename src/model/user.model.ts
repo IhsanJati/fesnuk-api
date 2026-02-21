@@ -1,6 +1,5 @@
-export class UserResponse {
-  username: string;
-  email: string;
-  password: string;
-  fullname: string;
+export interface UserResponse {
+  status: string;
+  message: string;
+  data?: object;
 }

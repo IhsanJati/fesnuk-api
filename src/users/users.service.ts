@@ -6,12 +6,13 @@ import {
 import { PrismaService } from 'src/common/prisma.service';
 import { type CreateUserRequest } from 'src/users/dto/create-user.schema';
 import { hash } from 'bcrypt';
+import { UserResponse } from 'src/model/user.model';
 
 @Injectable()
 export class UsersService {
   constructor(private prismaService: PrismaService) {}
 
-  async registerUser(data: CreateUserRequest) {
+  async registerUser(data: CreateUserRequest): Promise<UserResponse> {
     const emailUseCount = await this.prismaService.user.count({
       where: { email: data.email },
     });
@@ -22,7 +23,7 @@ export class UsersService {
 
     const hashedPassword = await hash(data.password, 10);
 
-    await this.prismaService.user.create({
+    const newUser = await this.prismaService.user.create({
       data: {
         fullname: data.fullname,
         username: data.username,
@@ -30,7 +31,18 @@ export class UsersService {
         password: hashedPassword,
       },
     });
-    return { status: 'success', message: 'User created' };
+    return {
+      status: 'Success',
+      message: 'Register Success',
+      data: {
+        id: newUser.id,
+        fullname: newUser.fullname,
+        username: newUser.username,
+        email: newUser.email,
+        image: newUser.image,
+        bio: newUser.bio,
+      },
+    };
   }
 
   async getUserById(id: number) {

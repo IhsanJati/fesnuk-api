@@ -3,6 +3,7 @@ import { UsersService } from './users.service';
 import { ZodValidationPipe } from 'src/common/zod.pipe';
 import { registerUserSchema } from './dto/create-user.schema';
 import type { CreateUserRequest } from 'src/users/dto/create-user.schema';
+import { UserResponse } from 'src/model/user.model';
 
 @Controller('/api/users')
 export class UsersController {
@@ -10,7 +11,7 @@ export class UsersController {
 
   @Post()
   @UsePipes(new ZodValidationPipe(registerUserSchema))
-  async registerUser(@Body() data: CreateUserRequest) {
+  async registerUser(@Body() data: CreateUserRequest): Promise<UserResponse> {
     return await this.userService.registerUser(data);
   }
 }
