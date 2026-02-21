@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Param, Post, UsePipes } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  UsePipes,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { ZodValidationPipe } from 'src/common/zod.pipe';
 import { registerUserSchema } from './dto/create-user.schema';
@@ -13,6 +22,16 @@ export class UsersController {
   @UsePipes(new ZodValidationPipe(registerUserSchema))
   async registerUser(@Body() data: CreateUserRequest): Promise<UserResponse> {
     return await this.userService.registerUser(data);
+  }
+
+  @Get('search')
+  async getSearchUser(
+    @Query('username') username: string,
+  ): Promise<UserResponse> {
+    if (!username) {
+      throw new BadRequestException('Query params username not found');
+    }
+    return await this.userService.getSearchUser(username);
   }
 
   @Get('/:username')

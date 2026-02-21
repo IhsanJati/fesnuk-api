@@ -71,4 +71,20 @@ export class UsersService {
       data: user,
     };
   }
+
+  async getSearchUser(username: string): Promise<UserResponse> {
+    const users = await this.prismaService.user.findMany({
+      where: { username: { contains: username, mode: 'insensitive' } },
+      select: { id: true, username: true, fullname: true, image: true },
+    });
+
+    if (users.length === 0) {
+      throw new NotFoundException('Username not found');
+    }
+
+    return {
+      message: 'Searching user',
+      data: users,
+    };
+  }
 }
