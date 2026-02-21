@@ -13,17 +13,18 @@ export class UsersService {
   constructor(private prismaService: PrismaService) {}
 
   async registerUser(data: CreateUserRequest): Promise<UserResponse> {
-    const emailUseCount = await this.prismaService.user.count({
+    const existingUser = await this.prismaService.user.findUnique({
       where: { email: data.email },
+      select: { id: true },
     });
 
-    if (emailUseCount > 0) {
+    if (!existingUser) {
       throw new ConflictException('Email has already exist');
     }
 
     const hashedPassword = await hash(data.password, 10);
 
-    const newUser = await this.prismaService.user.create({
+    await this.prismaService.user.create({
       data: {
         fullname: data.fullname,
         username: data.username,
@@ -34,14 +35,6 @@ export class UsersService {
     return {
       status: 'Success',
       message: 'Register Success',
-      data: {
-        id: newUser.id,
-        fullname: newUser.fullname,
-        username: newUser.username,
-        email: newUser.email,
-        image: newUser.image,
-        bio: newUser.bio,
-      },
     };
   }
 
