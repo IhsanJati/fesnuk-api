@@ -4,6 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/common/prisma.service';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { type CreateUserRequest } from 'src/users/dto/create-user.schema';
 import { hash } from 'bcrypt';
 import { UserResponse } from 'src/model/user.model';
@@ -11,7 +12,10 @@ import { type EditUserDto } from './dto/update-user.schema';
 
 @Injectable()
 export class UsersService {
-  constructor(private prismaService: PrismaService) {}
+  constructor(
+    private prismaService: PrismaService,
+    private cloudinaryService: CloudinaryService,
+  ) {}
 
   async registerUser(data: CreateUserRequest): Promise<UserResponse> {
     const existingUser = await this.prismaService.user.findUnique({
@@ -114,6 +118,43 @@ export class UsersService {
     return {
       message: 'Update user successfully',
       data: updateUser,
+    };
+  }
+
+  async uploadAvatar(
+    userId: number,
+    file: Express.Multer.File,
+  ): Promise<UserResponse> {
+    const user = await this.prismaService.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const uploadResult = await this.cloudinaryService.uploadImage(
+      file,
+      'avatars',
+    );
+
+    const updatedUser = await this.prismaService.user.update({
+      where: { id: userId },
+      data: {
+        imageId: uploadResult.public_id,
+        image: uploadResult.secure_url,
+      },
+      select: {
+        id: true,
+        fullname: true,
+        image: true,
+        imageId: true,
+      },
+    });
+
+    return {
+      message: 'Avatar upload successfully',
+      data: updatedUser,
     };
   }
 }
