@@ -15,6 +15,11 @@ import { UsersService } from 'src/users/users.service';
 import { CurrentUser } from 'src/common/current-user.decorator';
 import type { JwtPayload } from 'src/model/auth.model';
 import { ZodValidationPipe } from 'src/common/zod.pipe';
+import {
+  type CreateUserRequest,
+  registerUserSchema,
+} from 'src/users/dto/create-user.schema';
+import { UserResponse } from 'src/model/user.model';
 
 @Controller('auth')
 export class AuthController {
@@ -22,6 +27,12 @@ export class AuthController {
     private authService: AuthService,
     private userService: UsersService,
   ) {}
+
+  @Post()
+  @UsePipes(new ZodValidationPipe(registerUserSchema))
+  async registerUser(@Body() data: CreateUserRequest): Promise<UserResponse> {
+    return await this.userService.registerUser(data);
+  }
 
   @HttpCode(HttpStatus.OK)
   @Post('login')

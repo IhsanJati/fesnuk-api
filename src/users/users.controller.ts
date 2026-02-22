@@ -4,7 +4,6 @@ import {
   Controller,
   Get,
   Param,
-  Post,
   Put,
   Query,
   UseGuards,
@@ -12,8 +11,6 @@ import {
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { ZodValidationPipe } from 'src/common/zod.pipe';
-import { registerUserSchema } from './dto/create-user.schema';
-import type { CreateUserRequest } from 'src/users/dto/create-user.schema';
 import { UserResponse } from 'src/model/user.model';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { CurrentUser } from 'src/common/current-user.decorator';
@@ -23,12 +20,6 @@ import { type EditUserDto, editUserSchema } from './dto/update-user.schema';
 @Controller('/api/users')
 export class UsersController {
   constructor(private readonly userService: UsersService) {}
-
-  @Post()
-  @UsePipes(new ZodValidationPipe(registerUserSchema))
-  async registerUser(@Body() data: CreateUserRequest): Promise<UserResponse> {
-    return await this.userService.registerUser(data);
-  }
 
   @Get('search')
   async getSearchUser(
