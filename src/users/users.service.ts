@@ -7,6 +7,7 @@ import { PrismaService } from 'src/common/prisma.service';
 import { type CreateUserRequest } from 'src/users/dto/create-user.schema';
 import { hash } from 'bcrypt';
 import { UserResponse } from 'src/model/user.model';
+import { type EditUserDto } from './dto/update-user.schema';
 
 @Injectable()
 export class UsersService {
@@ -85,6 +86,34 @@ export class UsersService {
     return {
       message: 'Searching user',
       data: users,
+    };
+  }
+
+  async updateUserById(
+    userId: number,
+    editUserDto: EditUserDto,
+  ): Promise<UserResponse> {
+    const usernameTaken = await this.prismaService.user.findUnique({
+      where: { username: editUserDto.username },
+    });
+
+    if (usernameTaken && usernameTaken.id !== userId) {
+      throw new ConflictException('Username is already use');
+    }
+
+    const updateUser = await this.prismaService.user.update({
+      where: { id: userId },
+      data: {
+        username: editUserDto.username,
+        bio: editUserDto.bio,
+        fullname: editUserDto.fullname,
+      },
+      omit: { password: true },
+    });
+
+    return {
+      message: 'Update user successfully',
+      data: updateUser,
     };
   }
 }
