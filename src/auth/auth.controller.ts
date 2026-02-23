@@ -21,27 +21,27 @@ import {
 } from 'src/users/dto/create-user.schema';
 import { UserResponse } from 'src/model/user.model';
 
-@Controller('auth')
+@Controller('/api/auth')
 export class AuthController {
   constructor(
     private authService: AuthService,
     private userService: UsersService,
   ) {}
 
-  @Post()
+  @Post('/register')
   @UsePipes(new ZodValidationPipe(registerUserSchema))
   async registerUser(@Body() data: CreateUserRequest): Promise<UserResponse> {
     return await this.userService.registerUser(data);
   }
 
   @HttpCode(HttpStatus.OK)
-  @Post('login')
+  @Post('/login')
   @UsePipes(new ZodValidationPipe(signInSchema))
   signIn(@Body() SignInDto: SignInDto) {
     return this.authService.signIn(SignInDto.email, SignInDto.password);
   }
 
-  @Get('profile')
+  @Get('/profile')
   @UseGuards(AuthGuard)
   async getProfile(@CurrentUser() user: JwtPayload) {
     return await this.userService.getUserById(user.sub);
