@@ -23,7 +23,7 @@ export class UsersService {
       select: { id: true },
     });
 
-    if (!existingUser) {
+    if (existingUser) {
       throw new ConflictException('Email has already exist');
     }
 
