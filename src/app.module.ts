@@ -3,9 +3,16 @@ import { CommonModule } from './common/common.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { FollowModule } from './follow/follow.module';
 
 @Module({
-  imports: [CommonModule, UsersModule, AuthModule, CloudinaryModule],
+  imports: [
+    CommonModule,
+    UsersModule,
+    AuthModule,
+    CloudinaryModule,
+    FollowModule,
+  ],
   controllers: [],
   providers: [],
 })
