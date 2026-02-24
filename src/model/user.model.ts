@@ -1,5 +1,9 @@
 export interface UserResponse {
-  status?: string;
-  message: string;
+  success: boolean;
+  message?: string;
   data?: object;
+  error?: {
+    code: string;
+    messsage: string;
+  };
 }
