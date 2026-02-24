@@ -2,6 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcrypt';
+import { UserResponse } from 'src/model/user.model';
 
 @Injectable()
 export class AuthService {
@@ -10,10 +11,7 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async signIn(
-    email: string,
-    password: string,
-  ): Promise<{ access_token: string }> {
+  async signIn(email: string, password: string): Promise<UserResponse> {
     const user = await this.usersService.getUserByEmail(email);
 
     if (!user) {
@@ -32,7 +30,16 @@ export class AuthService {
     };
 
     return {
-      access_token: await this.jwtService.signAsync(payload),
+      success: true,
+      message: 'Sign In Successfully',
+      data: {
+        user: {
+          id: payload.sub,
+          username: payload.username,
+          email: payload.email,
+        },
+        access_token: await this.jwtService.signAsync(payload),
+      },
     };
   }
 }

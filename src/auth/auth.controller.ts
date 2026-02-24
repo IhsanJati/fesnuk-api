@@ -37,7 +37,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post('/login')
   @UsePipes(new ZodValidationPipe(signInSchema))
-  signIn(@Body() SignInDto: SignInDto) {
+  signIn(@Body() SignInDto: SignInDto): Promise<UserResponse> {
     return this.authService.signIn(SignInDto.email, SignInDto.password);
   }
 
