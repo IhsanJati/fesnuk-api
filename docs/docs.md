@@ -1,13 +1,40 @@
-### Standar Response
+# Standar Response
 
-```json
+### Success
+
+```ts
 {
-  "success": false,
-  "message":,
-  "data": {},
-  "error": {
-    "code": 123,
-    "message": "An error occurred!"
+  success: true,
+  message: '',
+  data: {},
+  meta: {},
+}
+```
+
+### Failed (Zod error)
+
+```ts
+{
+  success: false,
+  message: '',
+  error: {
+    code: "VALIDATION_ERROR",
+    detail: [
+      {
+        field: "Password",
+        error: "Password must be at least 8 character(s)"
+      }
+    ]
   }
+}
+```
+
+### Failed (HttpExeption)
+```ts
+{
+  success: false,
+  message: '',
+  error: '',
+  statusCode,
 }
 ```
