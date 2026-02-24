@@ -1,6 +1,8 @@
 import {
   Body,
   Controller,
+  Delete,
+  Param,
   ParseIntPipe,
   Post,
   UseGuards,
@@ -22,5 +24,17 @@ export class FollowController {
     @Body('followUserId', ParseIntPipe) followUserId: number,
   ): Promise<UserResponse> {
     return this.followService.followUserAccount(user.sub, followUserId);
+  }
+
+  @Delete('/:id')
+  @UseGuards(AuthGuard)
+  unfollowUserAccount(
+    @CurrentUser('sub') currentUserId: number,
+    @Param('id', ParseIntPipe) unfollowUserId: number,
+  ) {
+    return this.followService.unfollowUserAccount(
+      currentUserId,
+      unfollowUserId,
+    );
   }
 }

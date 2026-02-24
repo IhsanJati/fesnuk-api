@@ -69,4 +69,44 @@ export class FollowService {
       message: 'Follow user successfully',
     };
   }
+
+  async unfollowUserAccount(currentUserId: number, unfollowUserId: number) {
+    const userToUnfollow = await this.prismaService.user.findUnique({
+      where: { id: unfollowUserId },
+    });
+
+    if (!userToUnfollow) {
+      throw new NotFoundException('User not found');
+    }
+
+    try {
+      await this.prismaService.$transaction(async (tx) => {
+        await tx.follow.delete({
+          where: {
+            followerId_followingId: {
+              followerId: unfollowUserId,
+              followingId: currentUserId,
+            },
+          },
+        });
+
+        await tx.user.update({
+          where: { id: currentUserId },
+          data: { followingCount: { decrement: 1 } },
+        });
+
+        await tx.user.update({
+          where: { id: unfollowUserId },
+          data: { followerCount: { decrement: 1 } },
+        });
+      });
+
+      return {
+        message: 'User unfollow successfully',
+      };
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
+      throw new InternalServerErrorException('Server down');
+    }
+  }
 }
