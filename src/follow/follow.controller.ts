@@ -11,7 +11,6 @@ import { AuthGuard } from 'src/auth/auth.guard';
 import { FollowService } from './follow.service';
 import { CurrentUser } from 'src/common/current-user.decorator';
 import { UserResponse } from 'src/model/user.model';
-import type { JwtPayload } from 'src/model/auth.model';
 
 @Controller('/api/follow')
 export class FollowController {
@@ -20,10 +19,10 @@ export class FollowController {
   @Post()
   @UseGuards(AuthGuard)
   followUserAccount(
-    @CurrentUser() user: JwtPayload,
+    @CurrentUser('sub') currentUserId: number,
     @Body('followUserId', ParseIntPipe) followUserId: number,
   ): Promise<UserResponse> {
-    return this.followService.followUserAccount(user.sub, followUserId);
+    return this.followService.followUserAccount(currentUserId, followUserId);
   }
 
   @Delete('/:id')
