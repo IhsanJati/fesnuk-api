@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   Param,
   ParseIntPipe,
   Post,
@@ -23,6 +24,12 @@ export class FollowController {
     @Body('followUserId', ParseIntPipe) followUserId: number,
   ): Promise<UserResponse> {
     return this.followService.followUserAccount(currentUserId, followUserId);
+  }
+
+  @Get('/user')
+  @UseGuards(AuthGuard)
+  getLimitUser(@CurrentUser('sub') currentUserId: number) {
+    return this.followService.getLimitUser(currentUserId);
   }
 
   @Delete('/:id')

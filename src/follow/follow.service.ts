@@ -109,4 +109,26 @@ export class FollowService {
       throw new InternalServerErrorException('Server down');
     }
   }
+
+  async getLimitUser(currentUserId: number) {
+    const followedByUser = await this.prismaService.follow.findMany({
+      where: { followingId: currentUserId },
+      select: { followerId: true },
+    });
+
+    const followedId = followedByUser.map((id) => id.followerId);
+
+    const users = await this.prismaService.user.findMany({
+      where: { id: { notIn: [...followedId, currentUserId] } },
+      select: { id: true, fullname: true, username: true, image: true },
+      take: 5,
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return {
+      success: true,
+      message: '5 User who have been followed',
+      data: users,
+    };
+  }
 }
