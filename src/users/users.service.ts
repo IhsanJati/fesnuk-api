@@ -29,7 +29,7 @@ export class UsersService {
 
     const hashedPassword = await hash(data.password, 10);
 
-    await this.prismaService.user.create({
+    const newUser = await this.prismaService.user.create({
       data: {
         fullname: data.fullname,
         username: data.username,
@@ -38,8 +38,13 @@ export class UsersService {
       },
     });
     return {
-      status: 'Success',
-      message: 'Register Success',
+      success: true,
+      message: 'User register successfully',
+      data: {
+        fullname: newUser.fullname,
+        username: newUser.username,
+        email: newUser.email,
+      },
     };
   }
 
@@ -72,7 +77,7 @@ export class UsersService {
     }
 
     return {
-      message: 'User details',
+      success: true,
       data: user,
     };
   }
@@ -88,7 +93,7 @@ export class UsersService {
     }
 
     return {
-      message: 'Searching user',
+      success: true,
       data: users,
     };
   }
@@ -116,6 +121,7 @@ export class UsersService {
     });
 
     return {
+      success: true,
       message: 'Update user successfully',
       data: updateUser,
     };
@@ -153,7 +159,8 @@ export class UsersService {
     });
 
     return {
-      message: 'Avatar upload successfully',
+      success: true,
+      message: 'Upload image successfully',
       data: updatedUser,
     };
   }

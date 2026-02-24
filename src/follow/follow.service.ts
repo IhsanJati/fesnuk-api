@@ -65,7 +65,7 @@ export class FollowService {
     }
 
     return {
-      status: 'Success',
+      success: true,
       message: 'Follow user successfully',
     };
   }
