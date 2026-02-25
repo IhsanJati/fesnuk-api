@@ -4,6 +4,7 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { FollowModule } from './follow/follow.module';
+import { FeedModule } from './feed/feed.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { FollowModule } from './follow/follow.module';
     AuthModule,
     CloudinaryModule,
     FollowModule,
+    FeedModule,
   ],
   controllers: [],
   providers: [],
