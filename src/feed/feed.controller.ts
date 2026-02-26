@@ -3,6 +3,8 @@ import {
   Body,
   Controller,
   Get,
+  Param,
+  ParseIntPipe,
   Post,
   UploadedFile,
   UseGuards,
@@ -43,5 +45,11 @@ export class FeedController {
   @UseGuards(AuthGuard)
   getAllFeed() {
     return this.feedService.getAllFeed();
+  }
+
+  @Get(':id')
+  @UseGuards(AuthGuard)
+  getFeedDetails(@Param('id', ParseIntPipe) id: number) {
+    return this.feedService.getFeedDetailById(id);
   }
 }

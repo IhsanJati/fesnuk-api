@@ -1,4 +1,8 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { PrismaService } from 'src/common/prisma.service';
 
@@ -73,5 +77,31 @@ export class FeedService {
       },
     });
     return feeds;
+  }
+
+  async getFeedDetailById(id: number) {
+    const post = await this.prismaService.post.findUnique({
+      where: { id },
+      include: {
+        user: {
+          select: {
+            id: true,
+            fullname: true,
+            username: true,
+            image: true,
+          },
+        },
+      },
+    });
+
+    if (!post) {
+      throw new NotFoundException('Feed details not found');
+    }
+
+    return {
+      success: true,
+      message: 'Post detail',
+      data: post,
+    };
   }
 }
