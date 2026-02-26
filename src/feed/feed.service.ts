@@ -18,7 +18,7 @@ export class FeedService {
       file,
       'feeds',
       [
-        { height: 1080, width: 1080 },
+        { aspect_rasio: '4:5', crop: 'fill', gravity: 'auto' },
         { quality: 'auto', fetch_format: 'auto' },
       ],
     );
