@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Get,
   Post,
   UploadedFile,
   UseGuards,
@@ -36,5 +37,11 @@ export class FeedController {
       throw new BadRequestException('Image must be filled in');
     }
     return this.feedService.createFeed(currentUserId, image, caption);
+  }
+
+  @Get()
+  @UseGuards(AuthGuard)
+  getAllFeed() {
+    return this.feedService.getAllFeed();
   }
 }

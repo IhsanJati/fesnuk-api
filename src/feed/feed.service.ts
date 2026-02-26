@@ -55,4 +55,23 @@ export class FeedService {
       throw new InternalServerErrorException('Server down');
     }
   }
+
+  async getAllFeed() {
+    const feeds = await this.prismaService.post.findMany({
+      include: {
+        user: {
+          select: {
+            id: true,
+            username: true,
+            fullname: true,
+            image: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+    return feeds;
+  }
 }
