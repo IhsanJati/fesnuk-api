@@ -76,7 +76,11 @@ export class FeedService {
         createdAt: 'desc',
       },
     });
-    return feeds;
+    return {
+      success: true,
+      message: 'All feeds',
+      data: feeds,
+    };
   }
 
   async getFeedDetailById(id: number) {
