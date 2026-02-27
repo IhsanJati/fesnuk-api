@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
@@ -45,6 +46,15 @@ export class FeedController {
   @UseGuards(AuthGuard)
   getAllFeed() {
     return this.feedService.getAllFeed();
+  }
+
+  @Delete(':id')
+  @UseGuards(AuthGuard)
+  deletePostById(
+    @CurrentUser('sub') currentUserId: number,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
+    return this.feedService.deletePostById(currentUserId, id);
   }
 
   @Get(':id')

@@ -1,4 +1,5 @@
 import {
+  ForbiddenException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -107,5 +108,42 @@ export class FeedService {
       message: 'Post detail',
       data: post,
     };
+  }
+
+  async deletePostById(currentUserId: number, id: number) {
+    const post = await this.prismaService.post.findUnique({ where: { id } });
+
+    if (!post) {
+      throw new NotFoundException('Feed not found');
+    }
+
+    if (currentUserId !== post.userId) {
+      throw new ForbiddenException('Cant delete post another user id');
+    }
+
+    await this.cloudinaryService.deleteImage(post.imageId);
+
+    try {
+      await this.prismaService.$transaction(async (tx) => {
+        await tx.post.delete({
+          where: { id },
+        });
+
+        await tx.user.update({
+          where: { id: currentUserId },
+          data: {
+            postCount: { decrement: 1 },
+          },
+        });
+      });
+
+      return {
+        success: true,
+        message: 'Delete post successfully',
+      };
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException('Server down');
+    }
   }
 }
