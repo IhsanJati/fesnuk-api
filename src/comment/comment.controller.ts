@@ -1,4 +1,14 @@
-import { Body, Controller, Post, UseGuards, UsePipes } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Delete,
+  Param,
+  ParseIntPipe,
+  Post,
+  UseGuards,
+  UsePipes,
+} from '@nestjs/common';
 import { CommentService } from './comment.service';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { ZodValidationPipe } from 'src/common/zod.pipe';
@@ -21,5 +31,18 @@ export class CommentController {
     @Body() createCommentDto: CreateCommentDto,
   ): Promise<UserResponse> {
     return this.commentService.createComment(currentUserId, createCommentDto);
+  }
+
+  @Delete(':id')
+  @UseGuards(AuthGuard)
+  deleteComment(
+    @CurrentUser('sub') currentUserId: number,
+    @Param('id', ParseIntPipe) commentId: number,
+  ): Promise<UserResponse> {
+    if (!commentId) {
+      throw new BadRequestException('Id param required');
+    }
+
+    return this.commentService.deleteCommentById(currentUserId, commentId);
   }
 }

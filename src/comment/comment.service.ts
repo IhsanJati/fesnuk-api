@@ -55,4 +55,38 @@ export class CommentService {
       throw new InternalServerErrorException('Server down');
     }
   }
+
+  async deleteCommentById(
+    currentUserId: number,
+    id: number,
+  ): Promise<UserResponse> {
+    const comment = await this.prismaService.comment.findUnique({
+      where: { id },
+    });
+
+    if (!comment || comment.userId !== currentUserId) {
+      throw new NotFoundException('Comment not found');
+    }
+
+    try {
+      await this.prismaService.$transaction(async (tx) => {
+        await tx.comment.delete({
+          where: { id },
+        });
+
+        await tx.post.update({
+          where: { id: comment.postId },
+          data: { commentCount: { decrement: 1 } },
+        });
+      });
+
+      return {
+        success: true,
+        message: 'Delete comment successfully',
+      };
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException('Server down');
+    }
+  }
 }
