@@ -60,8 +60,8 @@ model Comment {
   content    String   @db.Text
   createdAt  DateTime @default(now())    @map("created_at")
 
-  user   User  @relation(fields: [userId], references: [id])
-  post   Post  @relation(fields: [postId], references: [id])
+  user   User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post   Post  @relation(fields: [postId], references: [id], onDelete: Cascade)
 }
 
 model Bookmark {
@@ -70,8 +70,8 @@ model Bookmark {
   content    String   @db.Text
   createdAt  DateTime @default(now())     @map("created_at")
 
-  user   User  @relation(fields: [userId], references: [id])
-  post   Post  @relation(fields: [postId], references: [id])
+  user   User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post   Post  @relation(fields: [postId], references: [id], onDelete: Cascade)
 
   @@id([userId, postId])
 }
@@ -82,8 +82,8 @@ model Likes {
   content    String   @db.Text
   createdAt  DateTime @default(now())     @map("created_at")
 
-  user   User  @relation(fields: [userId], references: [id])
-  post   Post  @relation(fields: [postId], references: [id])
+  user   User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post   Post  @relation(fields: [postId], references: [id], onDelete: Cascade)
 
   @@id([userId, postId])
 }
