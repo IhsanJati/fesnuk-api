@@ -9,8 +9,11 @@ import { ZodType } from 'zod';
 @Injectable()
 export class ZodValidationPipe implements PipeTransform {
   constructor(private schema: ZodType) {}
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   transform<T>(value: T, metadata: ArgumentMetadata) {
+    if (metadata.type !== 'body') {
+      return value;
+    }
+
     const parseResult = this.schema.safeParse(value);
 
     if (!parseResult.success) {
