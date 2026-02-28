@@ -1,6 +1,6 @@
 import {
-  ConflictException,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/common/prisma.service';
@@ -32,28 +32,63 @@ export class LikeService {
     });
 
     if (likeCheck) {
-      throw new ConflictException('Post has already liked');
+      try {
+        await this.prismaService.$transaction(async (tx) => {
+          await tx.likes.delete({
+            where: {
+              userId_postId: {
+                userId: currentUserId,
+                postId,
+              },
+            },
+          });
+
+          await tx.post.update({
+            where: { id: postId },
+            data: {
+              likeCount: { decrement: 1 },
+            },
+          });
+        });
+
+        return {
+          success: true,
+          message: 'Unlike post successfully',
+        };
+      } catch (error) {
+        console.log(error);
+        throw new InternalServerErrorException('Server down');
+      }
     }
 
-    const newLike = await this.prismaService.likes.create({
-      data: {
-        userId: currentUserId,
-        postId,
-      },
-    });
+    try {
+      const newLike = await this.prismaService.$transaction(async (tx) => {
+        const newLike = await tx.likes.create({
+          data: {
+            userId: currentUserId,
+            postId,
+          },
+        });
 
-    await this.prismaService.post.update({
-      where: { id: newLike.postId },
-      data: {
-        likeCount: { increment: 1 },
-      },
-    });
+        await tx.post.update({
+          where: { id: newLike.postId },
+          data: {
+            likeCount: { increment: 1 },
+          },
+        });
 
-    return {
-      success: true,
-      message: 'Like post successfully',
-      data: newLike,
-    };
+        return newLike;
+      });
+
+      return {
+        success: true,
+        message: 'Like post successfully',
+        data: newLike,
+      };
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException('Server down');
+    }
   }
 
   async checkUserLike(
