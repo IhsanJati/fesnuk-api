@@ -1,5 +1,6 @@
 import {
   Controller,
+  Get,
   Param,
   ParseIntPipe,
   Post,
@@ -13,6 +14,15 @@ import { UserResponse } from 'src/model/user.model';
 @Controller('/api/bookmark')
 export class BookmarkController {
   constructor(private bookmarkService: BookmarkService) {}
+
+  @Get(':id')
+  @UseGuards(AuthGuard)
+  isFeedSaved(
+    @CurrentUser('sub') currenUserId: number,
+    @Param('id', ParseIntPipe) postId: number,
+  ): Promise<UserResponse> {
+    return this.bookmarkService.isFeedSaved(currenUserId, postId);
+  }
 
   @Post(':id')
   @UseGuards(AuthGuard)

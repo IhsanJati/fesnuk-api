@@ -58,4 +58,44 @@ export class BookmarkService {
       data: newBookmark,
     };
   }
+
+  async isFeedSaved(
+    currentUserId: number,
+    postId: number,
+  ): Promise<UserResponse> {
+    const post = await this.prismaService.post.findUnique({
+      where: { id: postId },
+    });
+
+    if (!post) {
+      throw new NotFoundException('Post not found');
+    }
+
+    const isFeedSaved = await this.prismaService.bookmark.findUnique({
+      where: {
+        userId_postId: {
+          userId: currentUserId,
+          postId,
+        },
+      },
+    });
+
+    if (isFeedSaved) {
+      return {
+        success: true,
+        message: 'Feed has already saved',
+        data: {
+          isSaved: true,
+        },
+      };
+    }
+
+    return {
+      success: true,
+      message: 'Feed dont save',
+      data: {
+        isSaved: false,
+      },
+    };
+  }
 }
