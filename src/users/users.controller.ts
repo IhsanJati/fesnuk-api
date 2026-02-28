@@ -13,7 +13,6 @@ import {
   UploadedFile,
   UseGuards,
   UseInterceptors,
-  UsePipes,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { ZodValidationPipe } from 'src/common/zod.pipe';
@@ -41,9 +40,8 @@ export class UsersController {
 
   @Put('/edit-user')
   @UseGuards(AuthGuard)
-  @UsePipes(new ZodValidationPipe(editUserSchema))
   async editUser(
-    @Body() editUserDto: EditUserDto,
+    @Body(new ZodValidationPipe(editUserSchema)) editUserDto: EditUserDto,
     @CurrentUser() user: JwtPayload,
   ): Promise<UserResponse> {
     return await this.userService.updateUserById(user.sub, editUserDto);
