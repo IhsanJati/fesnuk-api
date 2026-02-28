@@ -70,6 +70,7 @@ export class UsersController {
   }
 
   @Get('/:username')
+  @UseGuards(AuthGuard)
   async getUserByUsername(
     @Param('username') username: string,
   ): Promise<UserResponse> {
