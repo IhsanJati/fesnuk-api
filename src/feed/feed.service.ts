@@ -6,6 +6,8 @@ import {
 } from '@nestjs/common';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { PrismaService } from 'src/common/prisma.service';
+import { FeedQueryDto } from './dto/feedQuery.schema';
+import { UserResponse } from 'src/model/user.model';
 
 @Injectable()
 export class FeedService {
@@ -61,8 +63,31 @@ export class FeedService {
     }
   }
 
-  async getAllFeed() {
+  async getAllFeed(
+    currentUserId: number,
+    query: FeedQueryDto,
+  ): Promise<UserResponse> {
+    const followings = await this.prismaService.follow.findMany({
+      where: { followingId: currentUserId },
+      select: { followerId: true },
+    });
+    const followingIds = followings.map((id) => id.followerId);
+
+    // Query Request
+    const page = query.page;
+    const limit = query.limit;
+    const skip = (page - 1) * limit;
+
+    const feedCount = await this.prismaService.post.count({
+      where: {
+        userId: { in: [...followingIds, currentUserId] },
+      },
+    });
+
     const feeds = await this.prismaService.post.findMany({
+      where: {
+        userId: { in: [...followingIds, currentUserId] },
+      },
       include: {
         user: {
           select: {
@@ -76,10 +101,20 @@ export class FeedService {
       orderBy: {
         createdAt: 'desc',
       },
+      take: limit,
+      skip: skip,
     });
+
+    const totalPages = Math.ceil(feedCount / limit);
+
     return {
       success: true,
-      message: 'All feeds',
+      message: 'Get feeds successfully',
+      meta: {
+        page: page,
+        limit: limit,
+        totalPages: totalPages,
+      },
       data: feeds,
     };
   }
@@ -95,6 +130,22 @@ export class FeedService {
             username: true,
             image: true,
           },
+        },
+        comments: {
+          select: {
+            content: true,
+            createdAt: true,
+            user: {
+              select: {
+                id: true,
+                fullname: true,
+                username: true,
+                image: true,
+                createdAt: true,
+              },
+            },
+          },
+          orderBy: { createdAt: 'desc' },
         },
       },
     });

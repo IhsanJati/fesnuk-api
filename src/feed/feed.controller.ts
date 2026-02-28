@@ -7,6 +7,7 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Query,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -16,6 +17,8 @@ import { AuthGuard } from 'src/auth/auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import { CurrentUser } from 'src/common/current-user.decorator';
+import { ZodValidationPipe } from 'src/common/zod.pipe';
+import { type FeedQueryDto, feedQuerySchema } from './dto/feedQuery.schema';
 
 @Controller('/api/feed')
 export class FeedController {
@@ -44,8 +47,11 @@ export class FeedController {
 
   @Get()
   @UseGuards(AuthGuard)
-  getAllFeed() {
-    return this.feedService.getAllFeed();
+  getAllFeed(
+    @CurrentUser('sub') currentUserId: number,
+    @Query(new ZodValidationPipe(feedQuerySchema)) query: FeedQueryDto,
+  ) {
+    return this.feedService.getAllFeed(currentUserId, query);
   }
 
   @Delete(':id')
