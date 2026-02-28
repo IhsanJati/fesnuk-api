@@ -6,6 +6,7 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { FollowModule } from './follow/follow.module';
 import { FeedModule } from './feed/feed.module';
 import { CommentModule } from './comment/comment.module';
+import { LikeModule } from './like/like.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { CommentModule } from './comment/comment.module';
     FollowModule,
     FeedModule,
     CommentModule,
+    LikeModule,
   ],
   controllers: [],
   providers: [],
