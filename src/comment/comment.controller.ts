@@ -7,7 +7,6 @@ import {
   ParseIntPipe,
   Post,
   UseGuards,
-  UsePipes,
 } from '@nestjs/common';
 import { CommentService } from './comment.service';
 import { AuthGuard } from 'src/auth/auth.guard';
@@ -25,10 +24,10 @@ export class CommentController {
 
   @Post()
   @UseGuards(AuthGuard)
-  @UsePipes(new ZodValidationPipe(createCommentSchema))
   createComment(
     @CurrentUser('sub') currentUserId: number,
-    @Body() createCommentDto: CreateCommentDto,
+    @Body(new ZodValidationPipe(createCommentSchema))
+    createCommentDto: CreateCommentDto,
   ): Promise<UserResponse> {
     return this.commentService.createComment(currentUserId, createCommentDto);
   }
