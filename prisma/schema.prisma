@@ -67,7 +67,6 @@ model Comment {
 model Bookmark {
   userId     Int                          @map("user_id")
   postId     Int                          @map("post_id")
-  content    String   @db.Text
   createdAt  DateTime @default(now())     @map("created_at")
 
   user   User  @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -79,7 +78,6 @@ model Bookmark {
 model Likes {
   userId     Int                          @map("user_id")
   postId     Int                          @map("post_id")
-  content    String   @db.Text
   createdAt  DateTime @default(now())     @map("created_at")
 
   user   User  @relation(fields: [userId], references: [id], onDelete: Cascade)
