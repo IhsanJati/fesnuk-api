@@ -70,6 +70,21 @@ export class UsersService {
     const user = await this.prismaService.user.findUnique({
       where: { username },
       omit: { password: true, imageId: true },
+      include: {
+        post: {
+          omit: { userId: true, imageId: true },
+        },
+        bookmarks: {
+          include: {
+            post: {
+              omit: {
+                userId: true,
+                imageId: true,
+              },
+            },
+          },
+        },
+      },
     });
 
     if (!user) {
