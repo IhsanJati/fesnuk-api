@@ -32,6 +32,15 @@ export class FollowController {
     return this.followService.getLimitUser(currentUserId);
   }
 
+  @Get('/:id')
+  @UseGuards(AuthGuard)
+  isFollowUser(
+    @CurrentUser('sub') currentUserId: number,
+    @Param('id', ParseIntPipe) otherUserId: number,
+  ) {
+    return this.followService.isFollowUser(currentUserId, otherUserId);
+  }
+
   @Delete('/:id')
   @UseGuards(AuthGuard)
   unfollowUserAccount(
