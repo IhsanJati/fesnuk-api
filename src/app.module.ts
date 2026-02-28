@@ -7,6 +7,7 @@ import { FollowModule } from './follow/follow.module';
 import { FeedModule } from './feed/feed.module';
 import { CommentModule } from './comment/comment.module';
 import { LikeModule } from './like/like.module';
+import { BookmarkModule } from './bookmark/bookmark.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { LikeModule } from './like/like.module';
     FeedModule,
     CommentModule,
     LikeModule,
+    BookmarkModule,
   ],
   controllers: [],
   providers: [],
