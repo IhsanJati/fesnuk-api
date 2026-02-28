@@ -1,5 +1,6 @@
 import {
   Controller,
+  Get,
   Param,
   ParseIntPipe,
   Post,
@@ -21,5 +22,14 @@ export class LikeController {
     @Param('id', ParseIntPipe) postId: number,
   ): Promise<UserResponse> {
     return this.likeService.likeFeedUser(currentUserId, postId);
+  }
+
+  @Get(':id')
+  @UseGuards(AuthGuard)
+  checkUserLike(
+    @CurrentUser('sub') currentUserId: number,
+    @Param('id', ParseIntPipe) postId: number,
+  ): Promise<UserResponse> {
+    return this.likeService.checkUserLike(currentUserId, postId);
   }
 }

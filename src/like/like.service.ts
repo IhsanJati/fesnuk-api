@@ -55,4 +55,44 @@ export class LikeService {
       data: newLike,
     };
   }
+
+  async checkUserLike(
+    currentUserId: number,
+    postId: number,
+  ): Promise<UserResponse> {
+    const postData = await this.prismaService.post.findUnique({
+      where: { id: postId },
+    });
+
+    if (!postData) {
+      throw new NotFoundException('Post not found');
+    }
+
+    const checkLike = await this.prismaService.likes.findUnique({
+      where: {
+        userId_postId: {
+          userId: currentUserId,
+          postId,
+        },
+      },
+    });
+
+    if (checkLike) {
+      return {
+        success: true,
+        message: 'User has already liked the post',
+        data: {
+          isLike: true,
+        },
+      };
+    }
+
+    return {
+      success: true,
+      message: 'User dont like the post',
+      data: {
+        isLike: false,
+      },
+    };
+  }
 }
