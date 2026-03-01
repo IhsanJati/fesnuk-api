@@ -1,12 +1,11 @@
 import {
-  ForbiddenException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { PrismaService } from 'src/common/prisma.service';
-import { FeedQueryDto } from './dto/feedQuery.schema';
+import { FeedQueryDto } from './schemas/feed-query.schema';
 import { UserResponse } from 'src/model/user.model';
 
 @Injectable()
@@ -20,7 +19,7 @@ export class FeedService {
     currentUserId: number,
     file: Express.Multer.File,
     caption: string,
-  ) {
+  ): Promise<UserResponse> {
     const uploadResult = await this.cloudinaryService.uploadImage(
       file,
       'feeds',
@@ -54,11 +53,11 @@ export class FeedService {
       return {
         success: true,
         message: 'Create feed successfully',
-        data: { newFeed },
+        data: newFeed,
       };
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       await this.cloudinaryService.deleteImage(uploadResult.public_id);
+      console.log(error);
       throw new InternalServerErrorException('Server down');
     }
   }
@@ -119,7 +118,7 @@ export class FeedService {
     };
   }
 
-  async getFeedDetailById(id: number) {
+  async getFeedDetailById(id: number): Promise<UserResponse> {
     const post = await this.prismaService.post.findUnique({
       where: { id },
       include: {
@@ -151,7 +150,7 @@ export class FeedService {
     });
 
     if (!post) {
-      throw new NotFoundException('Feed details not found');
+      throw new NotFoundException('Post not found');
     }
 
     return {
@@ -161,15 +160,14 @@ export class FeedService {
     };
   }
 
-  async deletePostById(currentUserId: number, id: number) {
+  async deletePostById(
+    currentUserId: number,
+    id: number,
+  ): Promise<UserResponse> {
     const post = await this.prismaService.post.findUnique({ where: { id } });
 
-    if (!post) {
-      throw new NotFoundException('Feed not found');
-    }
-
-    if (currentUserId !== post.userId) {
-      throw new ForbiddenException('Cant delete post another user id');
+    if (!post || currentUserId !== post.userId) {
+      throw new NotFoundException('Post not found');
     }
 
     await this.cloudinaryService.deleteImage(post.imageId);

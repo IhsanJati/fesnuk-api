@@ -18,7 +18,15 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import { CurrentUser } from 'src/common/current-user.decorator';
 import { ZodValidationPipe } from 'src/common/zod.pipe';
-import { type FeedQueryDto, feedQuerySchema } from './dto/feedQuery.schema';
+import {
+  type FeedQueryDto,
+  feedQuerySchema,
+} from './schemas/feed-query.schema';
+import { UserResponse } from 'src/model/user.model';
+import {
+  type CreateFeedDto,
+  createFeedSchema,
+} from './schemas/create-feed.schema';
 
 @Controller('/api/feed')
 export class FeedController {
@@ -34,15 +42,16 @@ export class FeedController {
   createFeed(
     @CurrentUser('sub') currentUserId: number,
     @UploadedFile() image: Express.Multer.File,
-    @Body('caption') caption: string,
-  ) {
-    if (!caption) {
-      throw new BadRequestException('Caption must be filled in');
-    }
+    @Body(new ZodValidationPipe(createFeedSchema)) createFeedDto: CreateFeedDto,
+  ): Promise<UserResponse> {
     if (!image) {
       throw new BadRequestException('Image must be filled in');
     }
-    return this.feedService.createFeed(currentUserId, image, caption);
+    return this.feedService.createFeed(
+      currentUserId,
+      image,
+      createFeedDto.caption,
+    );
   }
 
   @Get()
@@ -50,7 +59,7 @@ export class FeedController {
   getAllFeed(
     @CurrentUser('sub') currentUserId: number,
     @Query(new ZodValidationPipe(feedQuerySchema)) query: FeedQueryDto,
-  ) {
+  ): Promise<UserResponse> {
     return this.feedService.getAllFeed(currentUserId, query);
   }
 
@@ -59,13 +68,13 @@ export class FeedController {
   deletePostById(
     @CurrentUser('sub') currentUserId: number,
     @Param('id', ParseIntPipe) id: number,
-  ) {
+  ): Promise<UserResponse> {
     return this.feedService.deletePostById(currentUserId, id);
   }
 
   @Get(':id')
   @UseGuards(AuthGuard)
-  getFeedDetails(@Param('id', ParseIntPipe) id: number) {
+  getFeedDetails(@Param('id', ParseIntPipe) id: number): Promise<UserResponse> {
     return this.feedService.getFeedDetailById(id);
   }
 }
