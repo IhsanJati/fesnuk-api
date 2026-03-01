@@ -8,19 +8,19 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { signInSchema, type SignInDto } from './schemas/signIn.schema';
-import { UsersService } from 'src/users/users.service';
+import { UserService } from 'src/user/user.service';
 import { ZodValidationPipe } from 'src/common/zod.pipe';
 import {
   type CreateUserRequest,
   registerUserSchema,
-} from 'src/users/schemas/create-user.schema';
+} from 'src/user/schemas/create-user.schema';
 import { UserResponse } from 'src/model/user.model';
 
 @Controller('/api/auth')
 export class AuthController {
   constructor(
     private authService: AuthService,
-    private userService: UsersService,
+    private userService: UserService,
   ) {}
 
   @Post('/register')

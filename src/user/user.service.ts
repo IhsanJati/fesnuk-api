@@ -5,13 +5,15 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from 'src/common/prisma.service';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
-import { type CreateUserRequest } from 'src/users/dto/create-user.schema';
+import { type CreateUserRequest } from 'src/user/schemas/create-user.schema';
 import { hash } from 'bcrypt';
 import { UserResponse } from 'src/model/user.model';
-import { type EditUserDto } from './dto/update-user.schema';
+import { type EditUserDto } from './schemas/update-user.schema';
+import { SearchUserQueryDto } from './schemas/user-query.schema';
+import { UsernameParamDto } from './schemas/user-param.schema';
 
 @Injectable()
-export class UsersService {
+export class UserService {
   constructor(
     private prismaService: PrismaService,
     private cloudinaryService: CloudinaryService,
@@ -66,7 +68,11 @@ export class UsersService {
     return await this.prismaService.user.findUnique({ where: { email } });
   }
 
-  async getUserByUsername(username: string): Promise<UserResponse> {
+  async getUserByUsername(
+    usernameParamDto: UsernameParamDto,
+  ): Promise<UserResponse> {
+    const username = usernameParamDto.username;
+
     const user = await this.prismaService.user.findUnique({
       where: { username },
       omit: { password: true, imageId: true },
@@ -97,7 +103,11 @@ export class UsersService {
     };
   }
 
-  async getSearchUser(username: string): Promise<UserResponse> {
+  async getSearchUser(
+    searchUserQueryDto: SearchUserQueryDto,
+  ): Promise<UserResponse> {
+    const username = searchUserQueryDto.username;
+
     const users = await this.prismaService.user.findMany({
       where: { username: { contains: username, mode: 'insensitive' } },
       select: { id: true, username: true, fullname: true, image: true },

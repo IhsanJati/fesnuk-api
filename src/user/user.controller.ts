@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   FileTypeValidator,
@@ -14,48 +13,54 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { UsersService } from './users.service';
+import { UserService } from './user.service';
 import { ZodValidationPipe } from 'src/common/zod.pipe';
 import { UserResponse } from 'src/model/user.model';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { CurrentUser } from 'src/common/current-user.decorator';
-import type { JwtPayload } from 'src/model/auth.model';
-import { type EditUserDto, editUserSchema } from './dto/update-user.schema';
+import { type EditUserDto, editUserSchema } from './schemas/update-user.schema';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
+import {
+  type SearchUserQueryDto,
+  searchUserQuerySchema,
+} from './schemas/user-query.schema';
+import {
+  type UsernameParamDto,
+  usernameParamSchema,
+} from './schemas/user-param.schema';
 
-@Controller('/api/users')
-export class UsersController {
-  constructor(private readonly userService: UsersService) {}
+@Controller('/api/user')
+export class UserController {
+  constructor(private readonly userService: UserService) {}
 
   @Get('/search')
+  @UseGuards(AuthGuard)
   async getSearchUser(
-    @Query('username') username: string,
+    @Query(new ZodValidationPipe(searchUserQuerySchema))
+    searchUserQueryDto: SearchUserQueryDto,
   ): Promise<UserResponse> {
-    if (!username) {
-      throw new BadRequestException('Query params username not found');
-    }
-    return await this.userService.getSearchUser(username);
+    return await this.userService.getSearchUser(searchUserQueryDto);
   }
 
   @Put('/edit-user')
   @UseGuards(AuthGuard)
   async editUser(
+    @CurrentUser('sub') currentUserId: number,
     @Body(new ZodValidationPipe(editUserSchema)) editUserDto: EditUserDto,
-    @CurrentUser() user: JwtPayload,
   ): Promise<UserResponse> {
-    return await this.userService.updateUserById(user.sub, editUserDto);
+    return await this.userService.updateUserById(currentUserId, editUserDto);
   }
 
-  @UseGuards(AuthGuard)
   @Patch('/edit-avatar')
+  @UseGuards(AuthGuard)
   @UseInterceptors(
     FileInterceptor('image', {
       storage: memoryStorage(),
     }),
   )
   async updateAvatar(
-    @CurrentUser() user: JwtPayload,
+    @CurrentUser('sub') currentUserId: number,
     @UploadedFile(
       new ParseFilePipe({
         validators: [
@@ -66,14 +71,15 @@ export class UsersController {
     )
     file: Express.Multer.File,
   ): Promise<UserResponse> {
-    return this.userService.uploadAvatar(user.sub, file);
+    return this.userService.uploadAvatar(currentUserId, file);
   }
 
   @Get('/:username')
   @UseGuards(AuthGuard)
   async getUserByUsername(
-    @Param('username') username: string,
+    @Param(new ZodValidationPipe(usernameParamSchema))
+    usernameParamDto: UsernameParamDto,
   ): Promise<UserResponse> {
-    return await this.userService.getUserByUsername(username);
+    return await this.userService.getUserByUsername(usernameParamDto);
   }
 }

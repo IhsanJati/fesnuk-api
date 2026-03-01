@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { CommonModule } from './common/common.module';
-import { UsersModule } from './users/users.module';
+import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { FollowModule } from './follow/follow.module';
@@ -12,7 +12,7 @@ import { BookmarkModule } from './bookmark/bookmark.module';
 @Module({
   imports: [
     CommonModule,
-    UsersModule,
+    UserModule,
     AuthModule,
     CloudinaryModule,
     FollowModule,
