@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from 'src/common/prisma.service';
 import { UserResponse } from 'src/model/user.model';
+import { FollowUserDto } from './schemas/follow.schema';
 
 @Injectable()
 export class FollowService {
@@ -13,8 +14,10 @@ export class FollowService {
 
   async followUserAccount(
     currentUserId: number,
-    followUserId: number,
+    followUserDto: FollowUserDto,
   ): Promise<UserResponse> {
+    const followUserId = followUserDto.followUserId;
+
     if (currentUserId === followUserId) {
       throw new ConflictException("Can't follow own account");
     }
@@ -24,7 +27,7 @@ export class FollowService {
     });
 
     if (!otherUserId) {
-      throw new NotFoundException('User id not found');
+      throw new NotFoundException('User not found');
     }
 
     const isFollowUser = await this.prismaService.follow.findUnique({
@@ -41,8 +44,8 @@ export class FollowService {
     }
 
     try {
-      await this.prismaService.$transaction(async (tx) => {
-        await tx.follow.create({
+      const newFollow = await this.prismaService.$transaction(async (tx) => {
+        const newFollow = await tx.follow.create({
           data: {
             followerId: followUserId,
             followingId: currentUserId,
@@ -58,25 +61,44 @@ export class FollowService {
           where: { id: followUserId },
           data: { followerCount: { increment: 1 } },
         });
+
+        return newFollow;
       });
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
+      return {
+        success: true,
+        message: 'Follow user successfully',
+        data: newFollow,
+      };
     } catch (error) {
+      console.log(error);
       throw new InternalServerErrorException('Server down');
     }
-
-    return {
-      success: true,
-      message: 'Follow user successfully',
-    };
   }
 
-  async unfollowUserAccount(currentUserId: number, unfollowUserId: number) {
+  async unfollowUserAccount(
+    currentUserId: number,
+    unfollowUserId: number,
+  ): Promise<UserResponse> {
     const userToUnfollow = await this.prismaService.user.findUnique({
       where: { id: unfollowUserId },
     });
 
     if (!userToUnfollow) {
       throw new NotFoundException('User not found');
+    }
+
+    const isFollowUser = await this.prismaService.follow.findUnique({
+      where: {
+        followerId_followingId: {
+          followerId: unfollowUserId,
+          followingId: currentUserId,
+        },
+      },
+    });
+
+    if (!isFollowUser) {
+      throw new ConflictException('User hasnt followed yet');
     }
 
     try {
@@ -102,15 +124,16 @@ export class FollowService {
       });
 
       return {
+        success: true,
         message: 'User unfollow successfully',
       };
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
+      console.log(error);
       throw new InternalServerErrorException('Server down');
     }
   }
 
-  async getLimitUser(currentUserId: number) {
+  async getLimitUser(currentUserId: number): Promise<UserResponse> {
     const followedByUser = await this.prismaService.follow.findMany({
       where: { followingId: currentUserId },
       select: { followerId: true },
@@ -127,12 +150,15 @@ export class FollowService {
 
     return {
       success: true,
-      message: '5 User who have been followed',
+      message: '5 User who have not followed',
       data: users,
     };
   }
 
-  async isFollowUser(currentUserId: number, otherUserId: number) {
+  async isFollowUser(
+    currentUserId: number,
+    otherUserId: number,
+  ): Promise<UserResponse> {
     const isUserExist = await this.prismaService.user.findUnique({
       where: { id: otherUserId },
     });
@@ -162,7 +188,7 @@ export class FollowService {
 
     return {
       success: true,
-      message: 'User dont follow',
+      message: 'User has not follow',
       data: {
         isFollow: false,
       },
