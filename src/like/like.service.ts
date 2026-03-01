@@ -115,18 +115,18 @@ export class LikeService {
     if (checkLike) {
       return {
         success: true,
-        message: 'User has already liked the post',
+        message: 'Like status fetched',
         data: {
-          isLike: true,
+          isLiked: true,
         },
       };
     }
 
     return {
       success: true,
-      message: 'User dont like the post',
+      message: 'Like status fetched',
       data: {
-        isLike: false,
+        isLiked: false,
       },
     };
   }

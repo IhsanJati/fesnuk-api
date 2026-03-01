@@ -109,12 +109,12 @@ export class FeedService {
     return {
       success: true,
       message: 'Get feeds successfully',
+      data: feeds,
       meta: {
         page: page,
         limit: limit,
         totalPages: totalPages,
       },
-      data: feeds,
     };
   }
 

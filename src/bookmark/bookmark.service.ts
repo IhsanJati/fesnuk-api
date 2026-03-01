@@ -41,7 +41,7 @@ export class BookmarkService {
 
       return {
         success: true,
-        message: 'Delete bookmark successfully',
+        message: 'Unsave feed successfully',
       };
     }
 
@@ -54,7 +54,7 @@ export class BookmarkService {
 
     return {
       success: true,
-      message: 'Create bookmark successfully',
+      message: 'Save feed successfully',
       data: newBookmark,
     };
   }
@@ -83,7 +83,7 @@ export class BookmarkService {
     if (isFeedSaved) {
       return {
         success: true,
-        message: 'Feed has already saved',
+        message: 'Bookmark status fetched',
         data: {
           isSaved: true,
         },
@@ -92,7 +92,7 @@ export class BookmarkService {
 
     return {
       success: true,
-      message: 'Feed dont save',
+      message: 'Bookmark status fetched',
       data: {
         isSaved: false,
       },

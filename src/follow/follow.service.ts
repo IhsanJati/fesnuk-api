@@ -125,7 +125,7 @@ export class FollowService {
 
       return {
         success: true,
-        message: 'User unfollow successfully',
+        message: 'Unfollow user successfully',
       };
     } catch (error) {
       console.log(error);
@@ -150,7 +150,7 @@ export class FollowService {
 
     return {
       success: true,
-      message: '5 User who have not followed',
+      message: 'User suggestions fetched',
       data: users,
     };
   }
@@ -179,18 +179,18 @@ export class FollowService {
     if (isFollow) {
       return {
         success: true,
-        message: 'User has already followed',
+        message: 'Follow status fetched',
         data: {
-          isFollow: true,
+          isFollowing: true,
         },
       };
     }
 
     return {
       success: true,
-      message: 'User has not follow',
+      message: 'Follow status fetched',
       data: {
-        isFollow: false,
+        isFollowing: false,
       },
     };
   }
