@@ -2,9 +2,9 @@ import { z } from 'zod';
 
 export const usernameParamSchema = z.object({
   username: z
-    .string()
+    .string('Username must be a string')
     .trim()
-    .min(1, 'Username must be at least 1 character')
+    .min(1, 'Username cannot be empty')
     .max(30, 'Username too long'),
 });
 

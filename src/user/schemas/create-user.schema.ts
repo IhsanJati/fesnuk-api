@@ -5,11 +5,11 @@ export const registerUserSchema = z.object({
     .string('Fullname must be string')
     .min(6, 'Fullname must be at least 6 character'),
   username: z
-    .string('Fullname must be string')
+    .string('Username must be string')
     .min(6, 'Username must be at least 6 character'),
   email: z.email('Invalid email format'),
   password: z
-    .string('Fullname must be string')
+    .string('Password must be string')
     .min(6, 'Password must be at least 8 character'),
 });
 
