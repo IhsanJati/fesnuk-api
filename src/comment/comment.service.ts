@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/common/prisma.service';
-import { type CreateCommentDto } from './dto/createComment.schema';
+import { type CreateCommentDto } from './schemas/create-comment.schema';
 import { UserResponse } from 'src/model/user.model';
 
 @Injectable()

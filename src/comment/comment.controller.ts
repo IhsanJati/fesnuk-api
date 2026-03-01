@@ -14,7 +14,7 @@ import { ZodValidationPipe } from 'src/common/zod.pipe';
 import {
   type CreateCommentDto,
   createCommentSchema,
-} from './dto/createComment.schema';
+} from './schemas/create-comment.schema';
 import { UserResponse } from 'src/model/user.model';
 import { CurrentUser } from 'src/common/current-user.decorator';
 
@@ -41,7 +41,6 @@ export class CommentController {
     if (!commentId) {
       throw new BadRequestException('Id param required');
     }
-
     return this.commentService.deleteCommentById(currentUserId, commentId);
   }
 }
