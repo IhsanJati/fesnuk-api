@@ -25,8 +25,8 @@ export class AuthController {
 
   @Post('/register')
   @UsePipes(new ZodValidationPipe(registerUserSchema))
-  async registerUser(@Body() data: CreateUserRequest): Promise<UserResponse> {
-    return await this.userService.registerUser(data);
+  registerUser(@Body() data: CreateUserRequest): Promise<UserResponse> {
+    return this.userService.registerUser(data);
   }
 
   @HttpCode(HttpStatus.OK)

@@ -36,20 +36,20 @@ export class UserController {
 
   @Get('/search')
   @UseGuards(AuthGuard)
-  async getSearchUser(
+  getSearchUser(
     @Query(new ZodValidationPipe(searchUserQuerySchema))
     searchUserQueryDto: SearchUserQueryDto,
   ): Promise<UserResponse> {
-    return await this.userService.getSearchUser(searchUserQueryDto);
+    return this.userService.getSearchUser(searchUserQueryDto);
   }
 
   @Put('/edit-user')
   @UseGuards(AuthGuard)
-  async editUser(
+  editUser(
     @CurrentUser('sub') currentUserId: number,
     @Body(new ZodValidationPipe(editUserSchema)) editUserDto: EditUserDto,
   ): Promise<UserResponse> {
-    return await this.userService.updateUserById(currentUserId, editUserDto);
+    return this.userService.updateUserById(currentUserId, editUserDto);
   }
 
   @Patch('/edit-avatar')
@@ -59,7 +59,7 @@ export class UserController {
       storage: memoryStorage(),
     }),
   )
-  async updateAvatar(
+  updateAvatar(
     @CurrentUser('sub') currentUserId: number,
     @UploadedFile(
       new ParseFilePipe({
@@ -76,10 +76,10 @@ export class UserController {
 
   @Get('/:username')
   @UseGuards(AuthGuard)
-  async getUserByUsername(
+  getUserByUsername(
     @Param(new ZodValidationPipe(usernameParamSchema))
     usernameParamDto: UsernameParamDto,
   ): Promise<UserResponse> {
-    return await this.userService.getUserByUsername(usernameParamDto);
+    return this.userService.getUserByUsername(usernameParamDto);
   }
 }
