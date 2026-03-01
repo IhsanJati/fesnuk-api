@@ -43,6 +43,7 @@ export class UserService {
       success: true,
       message: 'User register successfully',
       data: {
+        id: newUser.id,
         fullname: newUser.fullname,
         username: newUser.username,
         email: newUser.email,
@@ -99,6 +100,7 @@ export class UserService {
 
     return {
       success: true,
+      message: 'User fetched successfully',
       data: user,
     };
   }
@@ -119,6 +121,7 @@ export class UserService {
 
     return {
       success: true,
+      message: 'User found',
       data: users,
     };
   }
@@ -164,6 +167,10 @@ export class UserService {
       throw new NotFoundException('User not found');
     }
 
+    if (user.imageId) {
+      await this.cloudinaryService.deleteImage(user.imageId);
+    }
+
     const uploadResult = await this.cloudinaryService.uploadImage(
       file,
       'avatars',
@@ -178,6 +185,7 @@ export class UserService {
       select: {
         id: true,
         fullname: true,
+        username: true,
         image: true,
         imageId: true,
       },
@@ -185,7 +193,7 @@ export class UserService {
 
     return {
       success: true,
-      message: 'Upload image successfully',
+      message: 'Update avatar successfully',
       data: updatedUser,
     };
   }
