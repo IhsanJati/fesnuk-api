@@ -76,12 +76,12 @@ cp .env.example .env
 5. Jalankan migrasi database
 
 ```bash
-npx prisma migrate dev
+yarn prisma migrate dev
 ```
 6. Jalankan generate prisma
 
 ```bash
-npx prisma generate
+yarn prisma generate
 ```
 
 7. Jalankan aplikasi
