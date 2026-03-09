@@ -132,6 +132,7 @@ export class FeedService {
         },
         comments: {
           select: {
+            id: true,
             content: true,
             createdAt: true,
             user: {
