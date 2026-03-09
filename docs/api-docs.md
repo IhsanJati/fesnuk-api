@@ -416,7 +416,16 @@ GET /api/feed/:id
       "username": "ihsanji",
       "image": "https://cdn.example.com/avatars/asfinonaeg"
     },
-    "comments": [] // Berisi komentar postingan
+    "comments": [
+      {
+        "id": 2,
+        "content": "Nice post!",
+        "createdAt": "2026-01-01T00:00:00.000Z",
+        "user" : {
+          // User yang comment
+        }
+      }
+    ]
   }
 }
 ```
