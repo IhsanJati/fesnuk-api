@@ -34,9 +34,12 @@ export class AuthService {
       message: 'Sign In Successfully',
       data: {
         user: {
-          id: payload.sub,
-          username: payload.username,
-          email: payload.email,
+          id: user.id,
+          username: user.username,
+          fullname: user.fullname,
+          email: user.email,
+          image: user.image,
+          bio: user.bio,
         },
         access_token: await this.jwtService.signAsync(payload),
       },
