@@ -22,13 +22,13 @@ model User {
   password       String  @db.VarChar(255)
   bio            String? @db.Text
   image          String? @db.VarChar(255)
-  imageId        String? @db.VarChar(255)    @map("image_id")
-  followingCount Int @db.Integer @default(0) @map("following_count")
-  followerCount  Int @db.Integer @default(0) @map("follower_count")
-  postCount      Int @db.Integer @default(0) @map("post_count")
-  createdAt DateTime @default(now())         @map("created_at")
+  imageId        String? @db.VarChar(255)        @map("image_id")
+  followingCount Int     @db.Integer @default(0) @map("following_count")
+  followerCount  Int     @db.Integer @default(0) @map("follower_count")
+  postCount      Int     @db.Integer @default(0) @map("post_count")
+  createdAt      DateTime @default(now())        @map("created_at")
 
-  post       Post[]
+  posts      Post[]
   comments   Comment[]
   bookmarks  Bookmark[]
   likes      Likes[]

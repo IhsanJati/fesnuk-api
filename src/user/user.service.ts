@@ -78,7 +78,7 @@ export class UserService {
       where: { username },
       omit: { password: true, imageId: true },
       include: {
-        post: {
+        posts: {
           omit: { userId: true, imageId: true },
         },
         bookmarks: {
