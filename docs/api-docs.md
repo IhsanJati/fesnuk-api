@@ -95,7 +95,10 @@ Login dan mendapatkan access token.
     "user": {
       "id": 1,
       "username": "johndoe",
-      "email": "john@example.com"
+      "fullname" : "John Doe",
+      "email": "john@example.com",
+      "image": "https://cdn.example.com/avatars/s2gbx2w6jsd",
+      "bio": null
     },
     "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
   }
@@ -186,7 +189,7 @@ GET /api/user/:username
     "followerCount": 0,
     "postCount": 0,
     "createdAt": "2026-01-01T00:00:00.000Z",
-    "post": [], // Berisi postingan user
+    "posts": [], // Berisi postingan user
     "bookmarks": [] // Berisi postingan yang disimpan user
   }
 }
